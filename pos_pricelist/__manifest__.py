@@ -30,7 +30,6 @@
         'static/src/xml/pos.xml'
     ],
     'post_init_hook': "set_pos_line_taxes",
-    'installable': False,
-    'application': False,
-    'auto_install': False,
+    'installable': True,
+    'license': 'AGPL-3',
 }

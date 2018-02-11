@@ -42,9 +42,8 @@
     seller_ids:
       - delay: 1
         name: base.res_partner_3
-        pricelist_ids:
-          - min_quantity : 2.0
-            price : 80
+        min_qty : 2.0
+        price : 80
 
 -
   This product belgon to computer category (5% dicount)
@@ -62,34 +61,34 @@
 -
   Prepare pricelist items
 -
-  !record {model: product.pricelist.version, id: product.ver0}:
-    items_id:
+  !record {model: product.pricelist, id: product.ver0}:
+    item_ids:
       - name: 10% Discount on POS Product 1 (Qty 3)
         sequence: 2
         product_id: pos_product_product_1
-        base: 1
+        base: list_price
         price_discount: -0.10
         min_quantity: 3
       - name: 30% Discount on POS Product 1 (Qty 5)
         sequence: 1
         product_id: pos_product_product_1
         min_quantity: 5
-        base: 1
+        base: list_price
         price_discount: -0.30
       - name: 10% Discount (POS Product 2)
         sequence: 1
         product_id: pos_product_product_2
-        base: 2
+        base: standard_price
         price_discount: -0.10
         min_quantity: 2
       - name: 20% Discount given by supplier
         sequence: 1
         min_quantity: 2
         product_id: pos_product_product_3
-        base: -2
+        base: pricelist
       - name: 5% Discount on all Computer related products (Qty 2)
         sequence: 1
         min_quantity: 2
-        base: 1
+        base: list_price
         categ_id: product.product_category_4
         price_discount: -0.05

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
+<odoo>
 
 <template id="report_receipt"
-          inherit_id="point_of_sale.report_receipt"
+          inherit_id="point_of_sale.report_saledetails"
           name="Add taxes detail">
     <xpath expr="//div[@class='page']" position="inside">
         <table class="table table-condensed">
@@ -31,6 +30,4 @@
     </xpath>
 </template>
 
-
-</data>
-</openerp>
+</odoo>

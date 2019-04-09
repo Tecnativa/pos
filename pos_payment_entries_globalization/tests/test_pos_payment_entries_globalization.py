@@ -9,17 +9,33 @@ class TestPosPaymentEntriesGlobalization(SavepointCase):
     @classmethod
     def setUpClass(cls):
         super(TestPosPaymentEntriesGlobalization, cls).setUpClass()
-
+        cls.pricelist = cls.env['product.pricelist'].create({
+            'name': 'Test pricelist',
+            'item_ids': [(0, 0, {
+                'applied_on': '3_global',
+                'compute_price': 'formula',
+                'base': 'list_price',
+            })]
+        })
         cls.move_line_obj = cls.env['account.move.line']
         cls.pos_order_obj = cls.env['pos.order']
         cls.main_config = cls.env.ref('point_of_sale.pos_config_main')
         cls.account_type = cls.env['account.account.type']
         cls.account_account = cls.env['account.account']
         cls.payment_method = cls.env['account.journal']
-        cls.product_01 = cls.env.ref(
-            'point_of_sale.product_product_consumable')
+        cls.product_01 = cls.env['product.product'].create({
+            'name': 'Test product 1',
+            'standard_price': 1.0,
+            'type': 'service',
+            'taxes_id': False,
+        })
         cls.pos_config = cls.env.ref('point_of_sale.pos_config_main')
+        cls.pos_config.write({
+            'available_pricelist_ids': [(6, 0, cls.pricelist.ids)],
+            'pricelist_id': cls.pricelist.id,
+        })
         cls.customer_01 = cls.env.ref('base.res_partner_2')
+        cls.customer_01.property_product_pricelist = cls.pricelist
         cls.pos_session_obj = cls.env['pos.session']
 
         # MODELS

@@ -14,14 +14,16 @@ class PosPaymentChangeWizardLine(models.TransientModel):
         required=True,
         ondelete="cascade",
     )
-
     new_payment_method_id = fields.Many2one(
         comodel_name="pos.payment.method",
         string="Payment Method",
         required=True,
-        domain=lambda s: s._domain_new_payment_method_id(),
+        domain="[('id', 'in', available_payment_method_ids)]",
     )
-
+    available_payment_method_ids = fields.Many2many(
+        comodel_name="pos.payment.method",
+        related="wizard_id.order_id.session_id.payment_method_ids",
+    )
     company_currency_id = fields.Many2one(
         comodel_name="res.currency",
         store=True,
@@ -30,18 +32,11 @@ class PosPaymentChangeWizardLine(models.TransientModel):
         readonly=True,
         help="Utility field to express amount currency",
     )
-
     amount = fields.Monetary(
         required=True,
         default=0.0,
         currency_field="company_currency_id",
     )
-
-    @api.model
-    def _domain_new_payment_method_id(self):
-        PosOrder = self.env["pos.order"]
-        order = PosOrder.browse(self.env.context.get("active_id"))
-        return [("id", "in", order.mapped("session_id.payment_method_ids").ids)]
 
     # View Section
     @api.model

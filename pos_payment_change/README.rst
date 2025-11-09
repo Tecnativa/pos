@@ -29,11 +29,10 @@ Point Of Sale - Change Payments
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
 This module extends the functionnality of the Odoo Point of Sale to
-allow the cashier to change the payments of a PoS order.
+allow the cashier to change the payments of a invoiced PoS order.
 
-This feature is usefull when the user realized that he did a mistake,
-just after he marked the order as paid, or during the close of the
-session, Only if entries has not been generated.
+This feature is usefull when the user realized that he did a mistake
+after invoice.
 
 **Table of contents**
 

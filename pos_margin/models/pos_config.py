@@ -11,5 +11,4 @@ class PosConfig(models.Model):
     iface_display_margin = fields.Boolean(
         string="Diplay Margin",
         help="Display Margin and Margin Rate in the frontend",
-        default=True,
     )

@@ -56,5 +56,4 @@ License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
-
 </odoo>

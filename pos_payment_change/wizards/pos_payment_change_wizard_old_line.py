@@ -14,14 +14,12 @@ class PosPaymentChangeWizardOldLine(models.TransientModel):
         required=True,
         ondelete="cascade",
     )
-
     old_payment_method_id = fields.Many2one(
         comodel_name="pos.payment.method",
         string="Payment Method",
         required=True,
         readonly=True,
     )
-
     company_currency_id = fields.Many2one(
         comodel_name="res.currency",
         store=True,
@@ -30,7 +28,6 @@ class PosPaymentChangeWizardOldLine(models.TransientModel):
         readonly=True,
         help="Utility field to express amount currency",
     )
-
     amount = fields.Monetary(
         required=True,
         readonly=True,

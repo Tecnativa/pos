@@ -23,7 +23,6 @@ class PosOrder(models.Model):
         """
         self.ensure_one()
         orders = self
-
         # Removing zero lines
         precision = self.pricelist_id.currency_id.decimal_places
         payment_lines = [
@@ -31,9 +30,7 @@ class PosOrder(models.Model):
             for x in payment_lines
             if not float_is_zero(x["amount"], precision_digits=precision)
         ]
-
         self._check_payment_change_allowed()
-
         comment = _(
             "The payments of the Order %(order)s (Ref: %(ref)s have"
             " been changed by %(user_name)s on %(today)s",
@@ -42,14 +39,11 @@ class PosOrder(models.Model):
             user_name=self.env.user.name,
             today=datetime.today(),
         )
-
         if self.config_id.payment_change_policy == "update":
             self.payment_ids.with_context().unlink()
-
             # Create new payment
             for line in payment_lines:
                 self.add_payment(line)
-
         elif self.config_id.payment_change_policy == "refund":
             # Refund order and mark it as paid
             # with same payment method as the original one
@@ -64,9 +58,7 @@ class PosOrder(models.Model):
                         "payment_date": fields.Date.context_today(self),
                     }
                 )
-
             refund_order.action_pos_order_paid()
-
             # Resale order and mark it as paid
             # with the new payment
             resale_order = self.copy(default={"pos_reference": self.pos_reference})
@@ -74,14 +66,12 @@ class PosOrder(models.Model):
                 line.update({"pos_order_id": resale_order.id})
                 resale_order.add_payment(line)
             resale_order.action_pos_order_paid()
-
             orders += refund_order + resale_order
             comment += _(
                 " (Refund Order: %(refund_order)s ; Resale Order: %(resale_order)s)",
                 refund_order=refund_order.name,
                 resale_order=resale_order.name,
             )
-
         for order in orders:
             order.note = "%s\n%s" % (order.note or "", comment)
         return orders

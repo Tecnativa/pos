@@ -13,20 +13,17 @@ class PosPaymentChangeWizard(models.TransientModel):
 
     # Column Section
     order_id = fields.Many2one(comodel_name="pos.order", string="Order", readonly=True)
-
     old_line_ids = fields.One2many(
         comodel_name="pos.payment.change.wizard.old.line",
         inverse_name="wizard_id",
         string="Old Payment Lines",
         readonly=True,
     )
-
     new_line_ids = fields.One2many(
         comodel_name="pos.payment.change.wizard.new.line",
         inverse_name="wizard_id",
         string="New Payment Lines",
     )
-
     amount_total = fields.Float(string="Total", readonly=True)
 
     # View Section
@@ -60,7 +57,6 @@ class PosPaymentChangeWizard(models.TransientModel):
     def button_change_payment(self):
         self.ensure_one()
         order = self.order_id
-
         # Check if the total is correct
         total = sum(self.mapped("new_line_ids.amount"))
         if (
@@ -83,7 +79,6 @@ class PosPaymentChangeWizard(models.TransientModel):
                     amount_total=order.amount_total,
                 )
             )
-
         # Change payment
         new_payments = [
             {
@@ -94,9 +89,7 @@ class PosPaymentChangeWizard(models.TransientModel):
             }
             for line in self.new_line_ids
         ]
-
         orders = order.change_payment(new_payments)
-
         if len(orders) == 1:
             # if policy is 'update', only close the pop up
             action = {"type": "ir.actions.act_window_close"}
@@ -106,5 +99,4 @@ class PosPaymentChangeWizard(models.TransientModel):
                 "point_of_sale.action_pos_pos_form"
             )
             action["domain"] = [("id", "in", orders.ids)]
-
         return action

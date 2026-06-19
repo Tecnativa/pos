@@ -45,7 +45,6 @@ class TestModule(TransactionCase):
                 .id,
             }
         )
-
         # create new session and open it
         self.pos_config.payment_method_ids = [
             self.bank_payment_method.id,
@@ -119,23 +118,18 @@ class TestModule(TransactionCase):
     # Test Section
     def test_01_payment_change_policy_update(self):
         self.pos_config.payment_change_policy = "update"
-
         self._initialize_journals_open_session()
         # Make a sale with 35 in cash journal and 65 in check
         order = self._sale(self.cash_payment_method, 35, self.bank_payment_method, 65)
-
         order_qty = len(self.PosOrder.search([]))
-
         with self.assertRaises(UserError):
             # Should not work if total is not correct
             self._change_payment(
                 order, self.cash_payment_method, 10, self.cash_payment_method, 10
             )
-
         self._change_payment(
             order, self.cash_payment_method, 10, self.bank_payment_method, 90
         )
-
         self.bank_payment = self.session.order_ids.mapped("payment_ids").filtered(
             lambda x: x.payment_method_id == self.bank_payment_method
         )
@@ -148,13 +142,11 @@ class TestModule(TransactionCase):
             10,
             "Bad recompute of the balance for the statement cash",
         )
-
         self.assertEqual(
             self.bank_payment.amount,
             90,
             "Bad recompute of the balance for the statement check",
         )
-
         # Check Order quantity
         self.assertEqual(
             order_qty,
@@ -164,17 +156,13 @@ class TestModule(TransactionCase):
 
     def test_02_payment_change_policy_refund(self):
         self.pos_config.payment_change_policy = "refund"
-
         self._initialize_journals_open_session()
         # Make a sale with 35 in cash journal and 65 in check
         order = self._sale(self.cash_payment_method, 35, self.bank_payment_method, 65)
-
         order_qty = len(self.PosOrder.search([]))
-
         self._change_payment(
             order, self.cash_payment_method, 50, self.bank_payment_method, 50
         )
-
         # Check Order quantity
         self.assertEqual(
             order_qty + 2,
@@ -184,13 +172,10 @@ class TestModule(TransactionCase):
 
     def test_03_payment_change_closed_orders(self):
         self.pos_config.payment_change_policy = "update"
-
         self._initialize_journals_open_session()
         # Make a sale with 35 in cash journal and 65 in check
         order = self._sale(self.cash_payment_method, 35, self.bank_payment_method, 65)
-
         self.session.state = "closed"
-
         with self.assertRaises(UserError):
             self._change_payment(
                 order, self.cash_payment_method, 10, self.bank_payment_method, 90
@@ -200,7 +185,6 @@ class TestModule(TransactionCase):
         self.pos_config.payment_change_policy = "refund"
         self._initialize_journals_open_session()
         order = self._sale(self.cash_payment_method, 35, self.bank_payment_method, 65)
-
         # the demo user should be able to do this
         user_demo = self.env.ref("base.user_demo")
         wizard = (

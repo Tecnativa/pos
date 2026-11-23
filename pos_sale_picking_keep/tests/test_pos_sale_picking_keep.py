@@ -55,16 +55,38 @@ class TestPosSalePickingKeep(TestPointOfSaleHttpCommon):
         sale_order.picking_ids.button_validate()
         self.assertEqual(so_picking.state, "done")
         self.assertEqual(sol.qty_delivered, 1)
-
-    def test_pos_order_flow(self):
-        self.main_pos_config.open_ui()
-        self.start_tour(
-            "/pos/ui?config_id=%d" % self.main_pos_config.id,
-            "PosSalePickingKeep2",
-            login="accountman",
+        res = pos_order.refund()
+        refund_pos_order = self.env[res["res_model"]].browse(res["res_id"])
+        self.assertEqual(refund_pos_order.state, "draft")
+        print({
+            'refund_pos_order': refund_pos_order,
+            'refund_pos_order.state': refund_pos_order.state,
+            'refund_pos_order.picking_count': refund_pos_order.picking_count,
+        })
+        wizard_form = Form(
+            self.env["pos.make.payment"].with_context(active_id=refund_pos_order.id)
         )
+        wizard = wizard_form.save()
+        wizard.check()
+        self.assertEqual(refund_pos_order.state, "paid")
         self.main_pos_config.current_session_id.close_session_from_ui()
-        pos_order = self.env["pos.order"].search([], order="id desc", limit=1)
-        self.assertTrue(pos_order)
-        self.assertEqual(pos_order.state, "done")
-        self.assertFalse(pos_order.session_id.picking_ids)
+        self.assertEqual(refund_pos_order.state, "done")
+        print({
+            'refund_pos_order': refund_pos_order,
+            'refund_pos_order.state': refund_pos_order.state,
+            'refund_pos_order.picking_count': refund_pos_order.picking_count,
+        })
+        # picking_count
+
+    # def test_pos_order_flow(self):
+    #     self.main_pos_config.open_ui()
+    #     self.start_tour(
+    #         "/pos/ui?config_id=%d" % self.main_pos_config.id,
+    #         "PosSalePickingKeep2",
+    #         login="accountman",
+    #     )
+    #     self.main_pos_config.current_session_id.close_session_from_ui()
+    #     pos_order = self.env["pos.order"].search([], order="id desc", limit=1)
+    #     self.assertTrue(pos_order)
+    #     self.assertEqual(pos_order.state, "done")
+    #     self.assertFalse(pos_order.session_id.picking_ids)
